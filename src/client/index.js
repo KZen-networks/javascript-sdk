@@ -557,10 +557,10 @@ export class BncClient {
     if (publicKey && signature) {
       tx.addSignature(publicKey, signature)
     } else {
-      tx.stdSignMsg = stdSignMsg;
-
-      return tx;
+      tx.stdSignMsg = stdSignMsg
     }
+
+    return tx
   }
 
   /**
