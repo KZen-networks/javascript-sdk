@@ -236,7 +236,7 @@ export class BncClient {
    * @param {Number} sequence optional sequence
    * @return {Promise} resolves with response (success or fail)
    */
-  async transfer(fromAddress, toAddress, amount, asset, memo = "", sequence = null, sign = true, broadcast = true) {
+  async transfer(fromAddress, toAddress, amount, asset, memo = "", sequence = null, publicKey = null, signature = null, broadcast = true) {
     const accCode = crypto.decodeAddress(fromAddress)
     const toAccCode = crypto.decodeAddress(toAddress)
 
@@ -279,9 +279,9 @@ export class BncClient {
       }]
     }
 
-    const tx = await this._prepareTransaction(msg, signMsg, fromAddress, sequence, memo, sign)
+    const tx = await this._prepareTransaction(msg, signMsg, fromAddress, sequence, memo, publicKey, signature)
 
-    if (sign && broadcast) {
+    if (publicKey &&  signature && broadcast) {
       return this._broadcastDelegate(tx)
     }
 
@@ -533,7 +533,7 @@ export class BncClient {
    * if false then the transaction object will be returned augmented with the message to sign
    * @return {Transaction} signed transaction
    */
-  async _prepareTransaction(msg, stdSignMsg, address, sequence = null, memo = "", sign = true) {
+  async _prepareTransaction(msg, stdSignMsg, address, sequence = null, memo = "", publicKey = null, signature = null) {
     if ((!this.account_number || !sequence) && address) {
       const data = await this._httpClient.request("get", `${api.getAccount}/${address}`)
       sequence = data.result.sequence
@@ -554,8 +554,8 @@ export class BncClient {
 
     const tx = new Transaction(options)
 
-    if (sign) {
-      return this._signingDelegate.call(this, tx, stdSignMsg)
+    if (publicKey && signature) {
+      tx.addSignature(publicKey, signature)
     } else {
       tx.stdSignMsg = stdSignMsg;
 
