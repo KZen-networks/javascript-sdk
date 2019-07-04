@@ -9,7 +9,7 @@
     "test:ledger:browser": "./tests-ledger/run-browser-tests.sh",
     "build": "rm -rf lib && npx babel src -d lib",
     "build:docs": "npx jsdoc-to-markdown -f src/**/*.js > docs/jsdoc.md",
-    "install": "npm run build",
+    "prepublishOnly": "npm run build",
     "lint": "eslint --fix src __tests__"
   },
   "dependencies": {
